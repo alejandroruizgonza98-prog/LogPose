@@ -22,8 +22,8 @@ ST13-003|Monkey.D.Luffy|ky
 ST14-001|Monkey.D.Luffy|k
 ST21-001|Monkey.D.Luffy|r
 ST22-001|Ace & Newgate|
-ST29-001|Monkey.D.Luffy|
-ST30-001|Luffy & Ace|
+ST29-001|Monkey.D.Luffy|y
+ST30-001|Luffy & Ace|rg
 P-011|Uta|
 P-047|Monkey.D.Luffy|
 P-076|Sakazuki|
@@ -60,7 +60,7 @@ OP04-039|Rebecca|
 OP04-040|Queen|
 OP04-058|Crocodile|
 OP05-001|Sabo|
-OP05-002|Belo Betty|
+OP05-002|Belo Betty|ry
 OP05-022|Donquixote Rosinante|g
 OP05-041|Sakazuki|
 OP05-060|Monkey.D.Luffy|p
@@ -81,76 +81,76 @@ OP08-001|Tony Tony.Chopper|
 OP08-002|Marco|
 OP08-021|Carrot|
 OP08-057|King|
-OP08-058|Charlotte Pudding|
-OP08-098|Kalgara|
+OP08-058|Charlotte Pudding|py
+OP08-098|Kalgara|y
 OP09-001|Shanks|r
 OP09-022|Lim|g
 OP09-042|Buggy|b
 OP09-061|Monkey.D.Luffy|
-OP09-062|Nico Robin|
+OP09-062|Nico Robin|py
 OP09-081|Marshall.D.Teach|k
 OP10-001|Smoker|
 OP10-002|Caesar Clown|
-OP10-003|Sugar|
+OP10-003|Sugar|rp
 OP10-022|Trafalgar Law|
 OP10-042|Usopp|
 OP10-099|Eustass "Captain" Kid|
-OP11-001|Koby|
+OP11-001|Koby|rk
 OP11-021|Jinbe|
-OP11-022|Shirahoshi|
-OP11-040|Monkey.D.Luffy|
-OP11-041|Nami|
+OP11-022|Shirahoshi|gy
+OP11-040|Monkey.D.Luffy|bp
+OP11-041|Nami|by
 OP11-062|Charlotte Katakuri|
 OP12-001|Silvers Rayleigh|
-OP12-020|Roronoa Zoro|
-OP12-040|Kuzan|
+OP12-020|Roronoa Zoro|g
+OP12-040|Kuzan|b
 OP12-041|Sanji|
-OP12-061|Donquixote Rosinante|
-OP12-081|Koala|
-OP13-001|Monkey.D.Luffy|
+OP12-061|Donquixote Rosinante|py
+OP12-081|Koala|ky
+OP13-001|Monkey.D.Luffy|rg
 OP13-002|Portgas.D.Ace|
 OP13-003|Gol.D.Roger|
-OP13-004|Sabo|
+OP13-004|Sabo|rk
 OP13-079|Imu|
-OP13-100|Jewelry Bonney|
-OP14-001|Trafalgar Law|
+OP13-100|Jewelry Bonney|y
+OP14-001|Trafalgar Law|r
 OP14-020|Dracule Mihawk|
 OP14-040|Jinbe|
-OP14-041|Boa Hancock|
-OP14-060|Donquixote Doflamingo|
-OP14-079|Crocodile|
-OP14-080|Gecko Moria|
+OP14-041|Boa Hancock|by
+OP14-060|Donquixote Doflamingo|p
+OP14-079|Crocodile|k
+OP14-080|Gecko Moria|ky
 OP15-001|Krieg|
 OP15-002|Lucy|
 OP15-022|Brook|
 OP15-039|Rebecca|
-OP15-058|Enel|
+OP15-058|Enel|p
 OP15-098|Monkey.D.Luffy|
-OP16-001|Portgas.D.Ace|
-OP16-022|Monkey.D.Luffy|
+OP16-001|Portgas.D.Ace|r
+OP16-022|Monkey.D.Luffy|gb
 OP16-041|Buggy|
 OP16-060|Sengoku|
-OP16-079|Yamato|
-OP16-080|Marshall.D.Teach|
-OP17-001|Edward.Newgate|
-OP17-020|Shanks|
-OP17-039|Rocks.D.Xebec|
-OP17-058|Kaido|
-OP17-079|Monkey.D.Luffy|
-OP17-099|Charlotte Linlin|
-OP18-001|Karoo|
+OP16-079|Yamato|k
+OP16-080|Marshall.D.Teach|ky
+OP17-001|Edward.Newgate|r
+OP17-020|Shanks|g
+OP17-039|Rocks.D.Xebec|b
+OP17-058|Kaido|p
+OP17-079|Monkey.D.Luffy|k
+OP17-099|Charlotte Linlin|y
+OP18-001|Karoo|rb
 OP18-021|Franky|
-OP18-022|Monkey.D.Luffy|
-OP18-041|Ms. All Sunday|
-OP18-060|Saint Gunko|
-OP18-079|Spandam|
+OP18-022|Monkey.D.Luffy|g
+OP18-041|Ms. All Sunday|b
+OP18-060|Saint Gunko|pk
+OP18-079|Spandam|ky
 EB01-001|Kouzuki Oden|
 EB01-021|Hannyabal|
 EB01-040|Kyros|
-EB02-010|Monkey.D.Luffy|
-EB03-001|Nefeltari Vivi|
-EB04-001|Jewelry Bonney|
-EB05-010|Nico Robin|
+EB02-010|Monkey.D.Luffy|gp
+EB03-001|Nefeltari Vivi|rb
+EB04-001|Jewelry Bonney|ry
+EB05-010|Nico Robin|gy
 PRB01-001|Sanji|
 `.trim().split('\n').map(function (l) {
   var p = l.split('|');

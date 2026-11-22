@@ -205,6 +205,7 @@
     if (!players().length && L.tab !== 'more') { v.innerHTML = welcome(); return; }
     v.innerHTML = ({ home: home, rounds: rounds, bounty: bountyPage, ming: mingPage, meta: meta, mu: matchups, more: more })[L.tab]();
     if (L.tab === 'more') { tick(); if (L.syncText) setSync(L.syncText); }
+    var tq = $('#turnq'); if (tq) tq.oninput = function () { L.turnQ = tq.value; save(); var pos = tq.selectionStart; render(); var n = $('#turnq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } };
   }
   function scopeSwitch() {
     return '<div class="seg sm"><button class="' + (L.scope === 'event' ? 'on' : '') + '" data-a="scope" data-v="event">Este evento</button><button class="' + (L.scope === 'all' ? 'on' : '') + '" data-a="scope" data-v="all">Siempre</button></div>';
@@ -366,8 +367,27 @@
         if (v == null) return '';
         return '<tr><td>' + dots(cols(l.code)) + ' <b>' + esc(l.name) + '</b><small>' + l.code + '</small></td><td class="mu-c" style="--h:' + Math.round(v * 1.2) + '"><b>' + v.toFixed(1).replace('.0', '') + '%</b></td></tr>';
       }).join('') + '</tbody></table>' +
-      '<p class="small muted">Partidas ranked online de ' + esc(R.SOURCE) + ', ' + fmtDate(R.DATE) + ' (' + R.LEADERS[i].games.toLocaleString('es-ES') + ' partidas de ' + esc(R.LEADERS[i].name) + '). No separa 1.º/2.º. <a href="' + esc(R.URL) + '" target="_blank" rel="noopener">Ver fuente</a></p></div>';
-    return h;
+      '<p class="small muted">Partidas ranked online de ' + esc(R.SOURCE) + ', ' + fmtDate(R.DATE) + ' (' + R.LEADERS[i].games.toLocaleString('es-ES') + ' partidas de ' + esc(R.LEADERS[i].name) + '). Solo los 8 líderes más jugados. <a href="' + esc(R.URL) + '" target="_blank" rel="noopener">Ver fuente</a></p></div>';
+    return h + turnRef(hint);
+  }
+  // Ir 1.º / 2.º para todos los líderes con datos
+  function turnRef(hint) {
+    var R = window.LP_REFERENCE;
+    if (!R || !R.TURN) return '';
+    var name = function (code) { var l = LEADERS.filter(function (x) { return x.code === code; })[0]; return l || { name: code, colors: [] }; };
+    var q = (L.turnQ || '').toLowerCase();
+    var rows = R.TURN.map(function (r) { var l = name(r[0]); return { code: r[0], name: l.name, cols: l.colors, f: r[1], fn: r[2], s: r[3], sn: r[4] }; })
+      .filter(function (r) { return !q || (r.name + ' ' + r.code).toLowerCase().indexOf(q) >= 0; })
+      .sort(function (a, b) { return (b.code === hint) - (a.code === hint) || (b.fn + b.sn) - (a.fn + a.sn); });
+    function c(v, n) { return '<td class="mu-c" style="--h:' + Math.round(v * 1.2) + '"><b>' + v.toFixed(1).replace('.0', '') + '%</b><small>' + n.toLocaleString('es-ES') + '</small></td>'; }
+    return '<div class="sec"><h2>Ir 1.º o 2.º · ' + R.TURN.length + ' líderes</h2></div><div class="card">' +
+      '<input class="inp" id="turnq" placeholder="Busca un líder: Kaido, OP18…" value="' + esc(L.turnQ || '') + '" autocomplete="off">' +
+      '<table class="mu"><thead><tr><th>Líder</th><th>Yendo 1.º</th><th>Yendo 2.º</th><th>Mejor</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        var d = r.f - r.s, best = Math.abs(d) < 2 ? '≈' : d > 0 ? '1.º' : '2.º';
+        return '<tr' + (r.code === hint ? ' class="mu-all"' : '') + '><td>' + dots(r.cols) + ' <b>' + esc(r.name) + '</b><small>' + r.code + '</small></td>' + c(r.f, r.fn) + c(r.s, r.sn) + '<td class="mu-best"><b>' + best + '</b><small>' + (d > 0 ? '+' : '') + d.toFixed(1) + '</small></td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<p class="small muted">% de victorias yendo 1.º y 2.º (debajo, nº de partidas). Datos de ' + esc(R.TURN_SOURCE) + ' hasta ' + fmtDate(R.TURN_DATE) + '. Son partidas online, no de torneo. <a href="' + esc(R.TURN_URL) + '" target="_blank" rel="noopener">Ver fuente</a></p></div>';
   }
   function more() {
     var ev = curEvent();

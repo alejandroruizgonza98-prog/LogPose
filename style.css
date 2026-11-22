@@ -216,3 +216,7 @@ details summary { cursor: pointer; }
 .mu-c b { font-family: var(--head); font-weight: 400; font-size: 17px; }
 .mu-c.empty { background: transparent; border: 1.5px dashed var(--line); color: var(--ink2); }
 .mu-all td:first-child b { color: var(--red2); }
+.mu-best { text-align: center; }
+.mu-best b { display: block; font-family: var(--head); font-weight: 400; font-size: 16px; color: var(--sea); }
+.mu-best small { font-size: 10px; color: var(--ink2); }
+#turnq { margin-bottom: 6px; }
