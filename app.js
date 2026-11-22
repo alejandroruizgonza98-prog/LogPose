@@ -331,7 +331,7 @@
   function matchups() {
     var ms = scopeMatches();
     var h = '<div class="sec"><h2>Emparejamientos</h2>' + scopeSwitch() + '</div>';
-    if (!ms.length) return h + '<p class="muted center">Registra rondas (con líder rival y turno) para ver los cruces.</p>';
+    if (!ms.length) { var pm = me(); return h + '<p class="muted center">Aún no hay rondas registradas. Abajo tienes los cruces globales; los vuestros aparecerán al registrar rondas (con líder rival y turno).</p>' + globalRef(pm ? pm.leader_code : ''); }
     var mine = {};
     ms.forEach(function (m) { var k = lkey(m.my_leader_code, m.my_leader_name); if (!mine[k]) mine[k] = { k: k, name: m.my_leader_name || 'Sin líder', code: m.my_leader_code, cols: m.my_colors, n: 0 }; mine[k].n++; });
     var mlist = Object.keys(mine).map(function (k) { return mine[k]; }).sort(function (a, b) { return b.n - a.n; });
