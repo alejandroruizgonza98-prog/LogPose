@@ -46,6 +46,9 @@ jobs:
           npx --yes sharp-cli@2 -i www/icon.svg -o assets/icon-only.png resize 1024 1024 || true
           if [ -f assets/icon-only.png ]; then
             cp assets/icon-only.png assets/icon-foreground.png
+            # capa de fondo del icono adaptativo (Android 8+)
+            echo '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><rect width="1024" height="1024" fill="#2a1a0b"/></svg>' > bg.svg
+            npx --yes sharp-cli@2 -i bg.svg -o assets/icon-background.png
             npx capacitor-assets generate --android --iconBackgroundColor "#2a1a0b" --splashBackgroundColor "#2a1a0b" || echo "Se usan los iconos por defecto"
           fi
 
