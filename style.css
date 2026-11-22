@@ -201,3 +201,4 @@ details summary { cursor: pointer; }
 .toast { background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; border: 2px solid var(--gold); font-weight: 700; animation: up .2s; max-width: 90vw; }
 @keyframes up { from { transform: translateY(30px); opacity: 0; } }
 @keyframes fade { from { opacity: 0; } }
+.vh { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none; }

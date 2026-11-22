@@ -425,7 +425,7 @@
     var ld = { code: p.leader_code, name: p.leader_name, colors: (p.leader_colors || []).slice() }, emo = /^em:/.test(p.emoji) ? p.emoji : 'em:skull', col = p.color, photo = p.photo || '';
     var w = sheet(head(old ? 'Editar pirata' : 'Nuevo pirata') +
       '<label>Nombre</label><input class="inp" id="pn" maxlength="30" value="' + esc(p.name) + '" placeholder="Nombre o apodo">' +
-      '<label>Foto</label><div class="photo-row"><span id="pprev"></span><label class="btn upl">📷 Subir foto<input type="file" accept="image/*" id="pf" hidden></label><button type="button" class="btn ghost" id="prm">Quitar</button></div>' +
+      '<label>Foto</label><div class="photo-row"><span id="pprev"></span><button type="button" class="btn upl" id="pfb">📷 Subir foto</button><input type="file" accept="image/*" id="pf" class="vh"><button type="button" class="btn ghost" id="prm">Quitar</button></div>' +
       '<label>…o un emblema</label><div class="emojis">' + EMB_IDS.map(function (e) { return '<button type="button" class="em' + ('em:' + e === emo ? ' on' : '') + '" data-e="' + e + '" title="' + esc(EMB[e].n) + '">' + emblemSvg(e) + '</button>'; }).join('') + '</div>' +
       '<label>Color</label><div class="pcols">' + PCOLORS.map(function (c) { return '<button type="button" class="pc' + (c === col ? ' on' : '') + '" data-c="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>' +
       '<label>Líder con el que juega</label>' + leaderField('pl') +
@@ -435,9 +435,10 @@
     each(w, '.em', function (b) { b.onclick = function () { emo = 'em:' + b.getAttribute('data-e'); photo = ''; each(w, '.em', function (x) { x.classList.toggle('on', x === b); }); prev(); }; });
     each(w, '.pc', function (b) { b.onclick = function () { col = b.getAttribute('data-c'); each(w, '.pc', function (x) { x.classList.toggle('on', x === b); }); prev(); }; });
     $('#prm', w).onclick = function () { photo = ''; prev(); };
+    $('#pfb', w).onclick = function () { $('#pf', w).value = ''; $('#pf', w).click(); };
     $('#pf', w).onchange = function () {
       var f = this.files && this.files[0]; if (!f) return;
-      shrink(f, function (url) { if (!url) { toast('No se pudo leer la foto'); return; } photo = url; prev(); });
+      shrink(f, function (url) { if (!url) { toast('No se pudo abrir esa foto. Prueba con otra o con una captura de pantalla'); return; } photo = url; prev(); });
     };
     bindLeader(w, 'pl', ld);
     // el líder cambia el fondo del emblema: repinta la vista previa al volver del selector
