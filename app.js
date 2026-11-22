@@ -41,7 +41,23 @@
   function dots(cols) { return (cols || []).map(function (c) { return '<i class="dot" style="background:' + colorHex(c) + '"></i>'; }).join(''); }
   function berries(n) { return '฿ ' + n.toLocaleString('es-ES'); }
   function fmtDate(d) { try { return new Date(d + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
-  function av(p, big) { return '<span class="av' + (big ? ' big' : '') + '" style="--pc:' + esc(p ? p.color : '#999') + '">' + esc(p ? p.emoji : '❔') + '</span>'; }
+  var EMB = window.LP_EMBLEMS || {};
+  var EMB_IDS = Object.keys(EMB);
+  // fondo: colores del líder (partido en dos si son dos) o el color del pirata
+  function pbg(p) {
+    var c = (p && p.leader_colors) || [];
+    if (c.length >= 2) return 'linear-gradient(135deg,' + colorHex(c[0]) + ' 50%,' + colorHex(c[1]) + ' 50%)';
+    if (c.length === 1) return colorHex(c[0]);
+    return p ? p.color : '#999';
+  }
+  function emblemSvg(id) { var e = EMB[id]; return e ? '<svg viewBox="0 0 64 64" aria-hidden="true">' + e.d + '</svg>' : ''; }
+  function face(p) {
+    if (!p) return '❔';
+    if (p.photo && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.photo)) return '<img src="' + p.photo + '" alt="">';
+    if (/^em:/.test(p.emoji) && EMB[p.emoji.slice(3)]) return emblemSvg(p.emoji.slice(3));
+    return esc(p.emoji);
+  }
+  function av(p, big) { return '<span class="av' + (big ? ' big' : '') + (p && p.photo ? ' photo' : '') + '" style="--pc:' + esc(pbg(p)) + '">' + face(p) + '</span>'; }
   function toast(msg) { var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; $('#toasts').appendChild(t); setTimeout(function () { t.remove(); }, 2600); }
   function leaderLabel(code, name, cols) { return name ? dots(cols) + ' <b>' + esc(name) + '</b> <small class="muted">' + esc(code) + '</small>' : '<span class="muted">Sin líder</span>'; }
   function each(root, sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), fn); }
@@ -246,7 +262,7 @@
     h += rows.map(function (x, i) {
       var pm = ms.filter(function (m) { return m.player_id === x.p.id; });
       var got = BADGES.filter(function (b) { return b.t(pm); }).map(function (b) { return b.i; }).join(' ');
-      return '<button class="wanted' + (i === 0 && x.b ? ' first' : '') + '" data-a="playerSheet" data-v="' + x.p.id + '"><div class="w-title">SE BUSCA</div><div class="w-photo" style="--pc:' + esc(x.p.color) + '">' + esc(x.p.emoji) + '</div>' +
+      return '<button class="wanted' + (i === 0 && x.b ? ' first' : '') + '" data-a="playerSheet" data-v="' + x.p.id + '"><div class="w-title">SE BUSCA</div><div class="w-photo' + (x.p.photo ? ' photo' : '') + '" style="--pc:' + esc(pbg(x.p)) + '">' + face(x.p) + '</div>' +
         '<div class="w-sub">VIVO O MUERTO</div><div class="w-name">' + esc(x.p.name) + '</div><div class="w-bounty">' + berries(x.b) + '</div><div class="w-meta">' + title(x.b) + ' · ' + recStr(x.r) + '</div>' + (got ? '<div class="w-badges">' + got + '</div>' : '') + '</button>';
     }).join('');
     h += '</div><details class="card"><summary><b>¿Cómo se calcula?</b></summary><p class="small">Victoria 30M · Empate 10M · 5M por cada victoria de tu mejor racha · Top cut: 50M por cada fase alcanzada · 5M por zarpar.</p>' +
@@ -374,6 +390,22 @@
   function pills(sel, cur) { return players().map(function (p) { return '<button type="button" class="pill' + (p.id === cur ? ' on' : '') + '" data-v="' + p.id + '">' + av(p) + esc(p.name) + '</button>'; }).join(''); }
   function bindPills(w, sel, fn) { each(w, sel + ' .pill', function (b) { b.onclick = function () { each(w, sel + ' .pill', function (x) { x.classList.toggle('on', x === b); }); fn(b.getAttribute('data-v')); }; }); }
 
+  // recorta la foto al centro, 192x192 en JPEG: cabe en la base de datos (≈10-20 KB)
+  function shrink(file, cb) {
+    var img = new Image(), r = new FileReader();
+    r.onload = function () { img.src = r.result; };
+    r.onerror = function () { cb(''); };
+    img.onload = function () {
+      var s = Math.min(img.width, img.height), c = document.createElement('canvas'); c.width = c.height = 192;
+      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 192, 192);
+      var q = 0.82, url = c.toDataURL('image/jpeg', q);
+      while (url.length > 55000 && q > 0.3) { q -= 0.15; url = c.toDataURL('image/jpeg', q); }
+      cb(url.length <= 60000 ? url : '');
+    };
+    img.onerror = function () { cb(''); };
+    r.readAsDataURL(file);
+  }
+
   var A = {};
   A.tab = function (v) { L.tab = v; save(); render(); window.scrollTo(0, 0); };
   A.scope = function (v) { L.scope = v; save(); render(); };
@@ -389,23 +421,33 @@
   };
   A.editPlayer = function (id) {
     var old = S.players[id];
-    var p = old || { id: uid('p'), name: '', emoji: EMOJIS[players().length % EMOJIS.length], color: PCOLORS[players().length % PCOLORS.length], leader_code: '', leader_name: '', leader_colors: [], deck: '' };
-    var ld = { code: p.leader_code, name: p.leader_name, colors: (p.leader_colors || []).slice() }, emo = p.emoji, col = p.color;
+    var p = old || { id: uid('p'), name: '', emoji: 'em:' + EMB_IDS[players().length % EMB_IDS.length], photo: '', color: PCOLORS[players().length % PCOLORS.length], leader_code: '', leader_name: '', leader_colors: [], deck: '' };
+    var ld = { code: p.leader_code, name: p.leader_name, colors: (p.leader_colors || []).slice() }, emo = /^em:/.test(p.emoji) ? p.emoji : 'em:skull', col = p.color, photo = p.photo || '';
     var w = sheet(head(old ? 'Editar pirata' : 'Nuevo pirata') +
       '<label>Nombre</label><input class="inp" id="pn" maxlength="30" value="' + esc(p.name) + '" placeholder="Nombre o apodo">' +
-      '<label>Emblema</label><div class="emojis">' + EMOJIS.map(function (e) { return '<button type="button" class="em' + (e === emo ? ' on' : '') + '">' + e + '</button>'; }).join('') + '</div>' +
+      '<label>Foto</label><div class="photo-row"><span id="pprev"></span><label class="btn upl">📷 Subir foto<input type="file" accept="image/*" id="pf" hidden></label><button type="button" class="btn ghost" id="prm">Quitar</button></div>' +
+      '<label>…o un emblema</label><div class="emojis">' + EMB_IDS.map(function (e) { return '<button type="button" class="em' + ('em:' + e === emo ? ' on' : '') + '" data-e="' + e + '" title="' + esc(EMB[e].n) + '">' + emblemSvg(e) + '</button>'; }).join('') + '</div>' +
       '<label>Color</label><div class="pcols">' + PCOLORS.map(function (c) { return '<button type="button" class="pc' + (c === col ? ' on' : '') + '" data-c="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>' +
       '<label>Líder con el que juega</label>' + leaderField('pl') +
       '<label>Notas del mazo (opcional)</label><input class="inp" id="pd" maxlength="60" value="' + esc(p.deck) + '" placeholder="p. ej. versión aggro">' +
       '<div class="actions">' + (old ? '<button class="btn danger" data-del>Borrar</button>' : '') + '<button class="btn primary grow" data-ok>Guardar</button></div>');
-    each(w, '.em', function (b) { b.onclick = function () { emo = b.textContent; each(w, '.em', function (x) { x.classList.toggle('on', x === b); }); }; });
-    each(w, '.pc', function (b) { b.onclick = function () { col = b.getAttribute('data-c'); each(w, '.pc', function (x) { x.classList.toggle('on', x === b); }); }; });
+    function prev() { $('#pprev', w).innerHTML = av({ emoji: emo, photo: photo, color: col, leader_colors: ld.colors }, true); $('#prm', w).style.display = photo ? '' : 'none'; }
+    each(w, '.em', function (b) { b.onclick = function () { emo = 'em:' + b.getAttribute('data-e'); photo = ''; each(w, '.em', function (x) { x.classList.toggle('on', x === b); }); prev(); }; });
+    each(w, '.pc', function (b) { b.onclick = function () { col = b.getAttribute('data-c'); each(w, '.pc', function (x) { x.classList.toggle('on', x === b); }); prev(); }; });
+    $('#prm', w).onclick = function () { photo = ''; prev(); };
+    $('#pf', w).onchange = function () {
+      var f = this.files && this.files[0]; if (!f) return;
+      shrink(f, function (url) { if (!url) { toast('No se pudo leer la foto'); return; } photo = url; prev(); });
+    };
     bindLeader(w, 'pl', ld);
+    // el líder cambia el fondo del emblema: repinta la vista previa al volver del selector
+    new MutationObserver(prev).observe($('#pl', w), { childList: true });
+    prev();
     $('[data-ok]', w).onclick = function () {
       var n = $('#pn', w).value.trim();
       if (!n) { toast('Ponle un nombre'); return; }
       if (players().some(function (x) { return x.id !== p.id && x.name.toLowerCase() === n.toLowerCase(); })) { toast('Ya hay un pirata con ese nombre'); return; }
-      put('players', { id: p.id, name: n.slice(0, 30), emoji: emo, color: col, leader_code: ld.code, leader_name: ld.name, leader_colors: ld.colors.slice(), deck: $('#pd', w).value.trim().slice(0, 60) });
+      put('players', { id: p.id, name: n.slice(0, 30), emoji: emo, photo: photo, color: col, leader_code: ld.code, leader_name: ld.name, leader_colors: ld.colors.slice(), deck: $('#pd', w).value.trim().slice(0, 60) });
       if (!old && !L.me) L.me = p.id;
       ensureDefaultEvent(); save(); w.close(); toast(old ? 'Guardado' : '¡' + n + ' se une a la tripulación!');
     };

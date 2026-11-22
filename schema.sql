@@ -21,6 +21,7 @@ create table if not exists public.players (
   leader_name text not null default '',
   leader_colors text[] not null default '{}',
   deck text not null default '',
+  photo text not null default '' check (char_length(photo) <= 60000),
   updated_at timestamptz not null default now()
 );
 
@@ -92,3 +93,6 @@ begin
     execute format('create policy crew_rw on public.%I for all to anon, authenticated using (crew = public.crew_hash()) with check (crew = public.crew_hash())', t);
   end loop;
 end $$;
+
+-- v2: foto de cada pirata (para proyectos creados con la versión anterior)
+alter table public.players add column if not exists photo text not null default '' check (char_length(photo) <= 60000);
