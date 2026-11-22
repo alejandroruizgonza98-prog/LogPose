@@ -6,5 +6,7 @@
 window.LP_CONFIG = {
   SUPABASE_URL: 'https://zbtzqahsmysvhidqmtsa.supabase.co',
   SUPABASE_KEY: 'sb_publishable_bx9ZHxfdarxLGFkOwN0UMA_oE6bKdTA',
+  // dirección pública de la web: la usan los enlaces de invitación (también desde el APK)
+  PUBLIC_URL: 'https://alejandroruizgonza98-prog.github.io/LogPose/',
   DEFAULT_EVENT: { id: 'ev-alicante-2026', name: 'Regional de Alicante', date: '2026-11-28', city: 'Elche (Alicante)', rounds: 0, mins: 35 },
 };

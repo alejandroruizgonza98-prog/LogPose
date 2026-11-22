@@ -648,7 +648,7 @@
     if (j) j.onclick = function () { join($('#cc', w).value); };
     var s = $('[data-share]', w);
     if (s) s.onclick = function () {
-      var text = '¡Únete a nuestra tripulación en Log Pose! 🏴‍☠️ ' + location.origin + location.pathname + '#crew=' + encodeURIComponent(L.crew);
+      var text = '¡Únete a nuestra tripulación en Log Pose! 🏴‍☠️ ' + (CFG.PUBLIC_URL || location.origin + location.pathname) + '#crew=' + encodeURIComponent(L.crew);
       if (navigator.share) navigator.share({ title: 'Log Pose', text: text }).catch(function () {});
       else if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast('Enlace copiado'); });
     };

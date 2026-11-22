@@ -1,0 +1,73 @@
+# Genera el APK de Log Pose (Android) con Capacitor en cada cambio de main
+# y lo publica en Releases: https://github.com/alejandroruizgonza98-prog/LogPose/releases/latest/download/LogPose.apk
+name: APK Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Preparar proyecto Capacitor
+        run: |
+          mkdir -p build/www
+          cp -r index.html app.js style.css config.js leaders.js emblems.js reference.js sw.js manifest.webmanifest icon.svg fonts build/www/
+          cd build
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets@3
+          npx cap init "Log Pose" com.alejandroruiz.logpose --web-dir www
+          npx cap add android
+
+      - name: Icono de la app
+        run: |
+          cd build
+          mkdir -p assets
+          npx --yes sharp-cli@2 -i www/icon.svg -o assets/icon-only.png resize 1024 1024 || true
+          if [ -f assets/icon-only.png ]; then
+            cp assets/icon-only.png assets/icon-foreground.png
+            npx capacitor-assets generate --android --iconBackgroundColor "#2a1a0b" --splashBackgroundColor "#2a1a0b" || echo "Se usan los iconos por defecto"
+          fi
+
+      - name: Compilar APK
+        run: |
+          cd build/android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../../LogPose.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LogPose-apk
+          path: LogPose.apk
+
+      - name: Publicar en Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: Log Pose APK #${{ github.run_number }}
+          body: |
+            APK de Log Pose generado automáticamente desde ${{ github.sha }}.
+            Descarga directa (siempre la última): https://github.com/${{ github.repository }}/releases/latest/download/LogPose.apk
+          files: LogPose.apk
+          make_latest: true
