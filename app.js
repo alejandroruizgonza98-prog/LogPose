@@ -348,6 +348,25 @@
       '<tr class="mu-all"><td><b>Todos</b><small>' + sel.length + ' rondas</small></td>' + cell(sel) + cell(first(sel)) + cell(second(sel)) + '</tr>' +
       rows.map(function (o) { return '<tr><td>' + dots(o.cols) + ' <b>' + esc(o.name) + '</b><small>' + esc(o.code || '') + ' · ' + o.ms.length + '×</small></td>' + cell(o.ms) + cell(first(o.ms)) + cell(second(o.ms)) + '</tr>'; }).join('') +
       '</tbody></table></div><p class="small muted center">% = victorias' + (L.muLeader === '*' ? ' de la tripulación' : ' con ese líder') + ' contra cada rival. Las rondas sin turno apuntado solo cuentan en Total.</p>';
+    return h + globalRef(L.muLeader !== '*' && mine[L.muLeader] ? mine[L.muLeader].code : '');
+  }
+  // Referencia global (TCG Match Making): % del líder elegido contra cada líder top del formato
+  function globalRef(hint) {
+    var R = window.LP_REFERENCE;
+    if (!R || !R.LEADERS) return '';
+    var idx = R.LEADERS.map(function (l) { return l.code; });
+    if (idx.indexOf(L.refLeader) < 0) L.refLeader = idx.indexOf(hint) >= 0 ? hint : idx[0];
+    var i = idx.indexOf(L.refLeader);
+    var cols = function (code) { var l = LEADERS.filter(function (x) { return x.code === code; })[0]; return l ? l.colors : []; };
+    var h = '<div class="sec"><h2>Meta global ' + esc(R.FORMAT) + '</h2></div><div class="card">' +
+      '<div class="mu-pick">' + R.LEADERS.map(function (l) { return '<button class="pill' + (l.code === L.refLeader ? ' on' : '') + '" data-a="refLeader" data-v="' + l.code + '">' + dots(cols(l.code)) + ' ' + esc(l.name) + '</button>'; }).join('') + '</div>' +
+      '<table class="mu"><thead><tr><th>Contra</th><th>% victorias</th></tr></thead><tbody>' +
+      R.LEADERS.map(function (l, j) {
+        var v = R.MATRIX[i][j];
+        if (v == null) return '';
+        return '<tr><td>' + dots(cols(l.code)) + ' <b>' + esc(l.name) + '</b><small>' + l.code + '</small></td><td class="mu-c" style="--h:' + Math.round(v * 1.2) + '"><b>' + v.toFixed(1).replace('.0', '') + '%</b></td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<p class="small muted">Partidas ranked online de ' + esc(R.SOURCE) + ', ' + fmtDate(R.DATE) + ' (' + R.LEADERS[i].games.toLocaleString('es-ES') + ' partidas de ' + esc(R.LEADERS[i].name) + '). No separa 1.º/2.º. <a href="' + esc(R.URL) + '" target="_blank" rel="noopener">Ver fuente</a></p></div>';
     return h;
   }
   function more() {
@@ -437,6 +456,7 @@
 
   var A = {};
   A.muLeader = function (v) { L.muLeader = v; save(); render(); };
+  A.refLeader = function (v) { L.refLeader = v; save(); render(); };
   A.tab = function (v) { L.tab = v; save(); render(); window.scrollTo(0, 0); };
   A.scope = function (v) { L.scope = v; save(); render(); };
   A.setMe = function (v) { L.me = v; save(); render(); };
