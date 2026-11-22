@@ -193,8 +193,8 @@
 
   /* ---------- UI shell ---------- */
   var TABS = [
-    { id: 'home', i: '🧭', n: 'Inicio' }, { id: 'rounds', i: '📜', n: 'Rondas' }, { id: 'bounty', i: '💰', n: 'Recompensas' },
-    { id: 'ming', i: '🤡', n: 'Minguito' }, { id: 'meta', i: '📊', n: 'Meta' }, { id: 'more', i: '⚓', n: 'Más' },
+    { id: 'home', i: '🧭', n: 'Inicio' }, { id: 'rounds', i: '📜', n: 'Rondas' }, { id: 'bounty', i: '💰', n: 'Carteles' },
+    { id: 'ming', i: '🤡', n: 'Minguito' }, { id: 'meta', i: '📊', n: 'Meta' }, { id: 'mu', i: '⚔️', n: 'Cruces' }, { id: 'more', i: '⚓', n: 'Más' },
   ];
   function render() {
     var ev = curEvent();
@@ -203,7 +203,7 @@
     $('#tabs').innerHTML = TABS.map(function (t) { return '<button class="tab' + (L.tab === t.id ? ' on' : '') + '" data-a="tab" data-v="' + t.id + '"><span>' + t.i + '</span>' + t.n + '</button>'; }).join('');
     var v = $('#view');
     if (!players().length && L.tab !== 'more') { v.innerHTML = welcome(); return; }
-    v.innerHTML = ({ home: home, rounds: rounds, bounty: bountyPage, ming: mingPage, meta: meta, more: more })[L.tab]();
+    v.innerHTML = ({ home: home, rounds: rounds, bounty: bountyPage, ming: mingPage, meta: meta, mu: matchups, more: more })[L.tab]();
     if (L.tab === 'more') { tick(); if (L.syncText) setSync(L.syncText); }
   }
   function scopeSwitch() {
@@ -321,6 +321,35 @@
     if (mrows.length) h += '<div class="sec"><h2>Líderes de la tripulación</h2></div><div class="card">' + mrows.map(function (o) { var rr = record(o.ms); return '<div class="line">' + dots(o.cols) + '<span class="grow"><b>' + esc(o.name) + '</b></span><span class="rec">' + recStr(rr) + ' · ' + rr.wr + '%</span></div>'; }).join('') + '</div>';
     return h;
   }
+  /* emparejamientos: mi líder contra cada líder rival, total y yendo 1.º / 2.º */
+  function cell(ms) {
+    if (!ms.length) return '<td class="mu-c empty">—</td>';
+    var r = record(ms), hue = Math.round(r.wr * 1.2); // 0 % rojo → 100 % verde
+    return '<td class="mu-c" style="--h:' + hue + '"><b>' + r.wr + '%</b><small>' + recStr(r) + '</small></td>';
+  }
+  function lkey(code, name) { return code || name || '?'; }
+  function matchups() {
+    var ms = scopeMatches();
+    var h = '<div class="sec"><h2>Emparejamientos</h2>' + scopeSwitch() + '</div>';
+    if (!ms.length) return h + '<p class="muted center">Registra rondas (con líder rival y turno) para ver los cruces.</p>';
+    var mine = {};
+    ms.forEach(function (m) { var k = lkey(m.my_leader_code, m.my_leader_name); if (!mine[k]) mine[k] = { k: k, name: m.my_leader_name || 'Sin líder', code: m.my_leader_code, cols: m.my_colors, n: 0 }; mine[k].n++; });
+    var mlist = Object.keys(mine).map(function (k) { return mine[k]; }).sort(function (a, b) { return b.n - a.n; });
+    if (!L.muLeader || (L.muLeader !== '*' && !mine[L.muLeader])) L.muLeader = '*';
+    h += '<div class="mu-pick"><button class="pill' + (L.muLeader === '*' ? ' on' : '') + '" data-a="muLeader" data-v="*">Toda la tripulación</button>' +
+      mlist.map(function (l) { return '<button class="pill' + (L.muLeader === l.k ? ' on' : '') + '" data-a="muLeader" data-v="' + esc(l.k) + '">' + dots(l.cols) + ' ' + esc(l.name) + ' <small class="muted">' + l.n + '</small></button>'; }).join('') + '</div>';
+    var sel = ms.filter(function (m) { return L.muLeader === '*' || lkey(m.my_leader_code, m.my_leader_name) === L.muLeader; });
+    var opp = {};
+    sel.forEach(function (m) { var k = lkey(m.opp_leader_code, m.opp_leader_name); (opp[k] = opp[k] || { name: m.opp_leader_name || 'Desconocido', code: m.opp_leader_code, cols: m.opp_colors, ms: [] }).ms.push(m); });
+    var rows = Object.keys(opp).map(function (k) { return opp[k]; }).sort(function (a, b) { return b.ms.length - a.ms.length; });
+    function first(x) { return x.filter(function (m) { return m.went_first === true; }); }
+    function second(x) { return x.filter(function (m) { return m.went_first === false; }); }
+    h += '<div class="card mu-wrap"><table class="mu"><thead><tr><th>Rival</th><th>Total</th><th>Yendo 1.º</th><th>Yendo 2.º</th></tr></thead><tbody>' +
+      '<tr class="mu-all"><td><b>Todos</b><small>' + sel.length + ' rondas</small></td>' + cell(sel) + cell(first(sel)) + cell(second(sel)) + '</tr>' +
+      rows.map(function (o) { return '<tr><td>' + dots(o.cols) + ' <b>' + esc(o.name) + '</b><small>' + esc(o.code || '') + ' · ' + o.ms.length + '×</small></td>' + cell(o.ms) + cell(first(o.ms)) + cell(second(o.ms)) + '</tr>'; }).join('') +
+      '</tbody></table></div><p class="small muted center">% = victorias' + (L.muLeader === '*' ? ' de la tripulación' : ' con ese líder') + ' contra cada rival. Las rondas sin turno apuntado solo cuentan en Total.</p>';
+    return h;
+  }
   function more() {
     var ev = curEvent();
     var h = '<div class="sec"><h2>Herramientas</h2></div><div class="tools">' +
@@ -407,6 +436,7 @@
   }
 
   var A = {};
+  A.muLeader = function (v) { L.muLeader = v; save(); render(); };
   A.tab = function (v) { L.tab = v; save(); render(); window.scrollTo(0, 0); };
   A.scope = function (v) { L.scope = v; save(); render(); };
   A.setMe = function (v) { L.me = v; save(); render(); };

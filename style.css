@@ -43,7 +43,7 @@ h1, h2 { font-family: var(--head); font-weight: 400; letter-spacing: .5px; margi
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: center;
   background: #2a1a0b; border-top: 3px solid var(--gold); padding-bottom: env(safe-area-inset-bottom);
 }
-.tab { flex: 1; max-width: 94px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 0 8px; font-size: 10.5px; color: #cdb48a; }
+.tab { flex: 1; min-width: 0; max-width: 94px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 0 8px; font-size: 10px; color: #cdb48a; }
 .tab span { font-size: 21px; filter: grayscale(.6); }
 .tab.on { color: var(--gold); background: rgba(217, 165, 33, .12); }
 .tab.on span { filter: none; transform: scale(1.12); }
@@ -202,3 +202,17 @@ details summary { cursor: pointer; }
 @keyframes up { from { transform: translateY(30px); opacity: 0; } }
 @keyframes fade { from { opacity: 0; } }
 .vh { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none; }
+
+/* cruces */
+.mu-pick { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; }
+.mu-pick .pill { white-space: nowrap; padding: 6px 12px; }
+.mu-wrap { padding: 6px; overflow-x: auto; }
+.mu { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 13px; }
+.mu th { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--ink2); text-align: center; padding: 4px 2px; }
+.mu th:first-child { text-align: left; }
+.mu td:first-child { text-align: left; min-width: 110px; }
+.mu td small { display: block; font-size: 10.5px; color: var(--ink2); }
+.mu-c { text-align: center; border-radius: 5px; padding: 6px 2px; background: hsl(var(--h) 60% 80%); border: 1.5px solid hsl(var(--h) 45% 40%); min-width: 62px; }
+.mu-c b { font-family: var(--head); font-weight: 400; font-size: 17px; }
+.mu-c.empty { background: transparent; border: 1.5px dashed var(--line); color: var(--ink2); }
+.mu-all td:first-child b { color: var(--red2); }
