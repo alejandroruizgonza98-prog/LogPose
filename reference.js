@@ -83,3 +83,54 @@ window.LP_REFERENCE = {
     [43.9, 46.6, 44.0, 48.1, 75.0, 18.2, 35.7, null],
   ],
 };
+
+/* Fichas de cruces por líder (cardkaizoku.com, capturas del 25-11-2026).
+   [código rival, nombre, % total, partidas, % yendo 1.º, partidas 1.º, % yendo 2.º, partidas 2.º]
+   Los % son de la columna del líder de la ficha contra cada rival. */
+window.LP_REFERENCE.DETAIL_SOURCE = 'cardkaizoku.com';
+window.LP_REFERENCE.DETAIL_URL = 'https://cardkaizoku.com/';
+window.LP_REFERENCE.DETAIL = {
+  'OP09-042': { name: 'Buggy', date: '2026-11-25', first: 62.37, second: 47.8, games: 10031, mu: [
+    ['OP18-060', 'Saint Gunko', 62, 1547, 68, 803, 56, 744],
+    ['OP17-039', 'Rocks.D.Xebec', 55, 1559, 62, 823, 46, 736],
+    ['OP09-042', 'Buggy (espejo)', 50, 868, 69, 434, 31, 434],
+    ['OP13-001', 'Monkey.D.Luffy', 54, 690, 56, 361, 52, 329],
+    ['ST10-002', 'Monkey.D.Luffy', 39, 595, 44, 299, 33, 296],
+    ['OP15-058', 'Enel', 51, 499, 67, 245, 35, 254],
+    ['EB05-010', 'Nico Robin', 45, 465, 50, 236, 41, 229],
+    ['OP18-079', 'Spandam', 79, 398, 80, 259, 78, 139],
+    ['OP18-041', 'Ms. All Sunday', 70, 369, 73, 203, 66, 166],
+    ['OP13-004', 'Sabo', 52, 328, 57, 183, 46, 145],
+    ['OP18-021', 'Franky', 44, 301, 45, 158, 42, 143],
+    ['OP18-022', 'Monkey.D.Luffy', 58, 272, 58, 165, 57, 107],
+    ['OP14-001', 'Trafalgar Law', 46, 287, 56, 151, 35, 136],
+    ['ST30-001', 'Luffy & Ace', 34, 217, 36, 108, 31, 109],
+    ['OP17-058', 'Kaido', 79, 146, 90, 83, 63, 63],
+    ['OP18-001', 'Karoo', 60, 102, 66, 67, 49, 35],
+    ['OP11-041', 'Nami', 81, 104, 92, 51, 70, 53],
+    ['', 'Marshall.D.Teach', 30, 108, 28, 75, 33, 33],
+    ['OP10-003', 'Sugar', 68, 90, 67, 46, 68, 44],
+    ['OP16-022', 'Monkey.D.Luffy', 53, 93, 57, 47, 48, 46],
+    ['OP14-041', 'Boa Hancock', 59, 61, 68, 40, 43, 21],
+    ['OP17-020', 'Shanks', 66, 83, 84, 45, 45, 38],
+    ['OP12-061', 'Donquixote Rosinante', 58, 67, 77, 30, 43, 37],
+    ['OP17-079', 'Monkey.D.Luffy', 61, 82, 51, 47, 74, 35],
+    ['EB02-010', 'Monkey.D.Luffy', 43, 54, 55, 33, 24, 21],
+    ['OP05-098', 'Enel', 72, 50, 73, 37, 69, 13],
+    ['OP13-079', 'Imu', 63, 40, 67, 30, 50, 10],
+    ['OP17-001', 'Edward.Newgate', 70, 47, 70, 40, 71, 7],
+  ] },
+  'OP15-058': { name: 'Enel', date: '2026-11-25', first: 60.89, second: 43.6, games: 5136, mu: [
+    ['OP18-060', 'Saint Gunko', 59, 754, 68, 416, 48, 338],
+    ['OP17-039', 'Rocks.D.Xebec', 45, 777, 55, 423, 34, 354],
+    ['OP09-042', 'Buggy', 49, 499, 65, 254, 33, 245],
+    ['OP13-001', 'Monkey.D.Luffy', 35, 356, 48, 194, 20, 162],
+    ['ST10-002', 'Monkey.D.Luffy', 81, 301, 83, 152, 80, 149],
+    ['OP15-058', 'Enel (espejo)', 50, 284, 61, 142, 39, 142],
+    ['EB05-010', 'Nico Robin', 41, 238, 46, 122, 36, 116],
+    ['OP18-079', 'Spandam', 46, 212, 46, 156, 46, 56],
+    ['OP18-041', 'Ms. All Sunday', 57, 198, 60, 94, 54, 104],
+    ['OP13-004', 'Sabo', 64, 182, 72, 104, 54, 78],
+    ['OP18-021', 'Franky', 63, 137, 75, 83, 44, 54],
+  ] },
+};

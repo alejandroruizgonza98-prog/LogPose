@@ -355,6 +355,10 @@
   function globalRef(hint) {
     var R = window.LP_REFERENCE;
     if (!R || !R.LEADERS) return '';
+    return detailRef() + globalMatrix(hint);
+  }
+  function globalMatrix(hint) {
+    var R = window.LP_REFERENCE;
     var idx = R.LEADERS.map(function (l) { return l.code; });
     if (idx.indexOf(L.refLeader) < 0) L.refLeader = idx.indexOf(hint) >= 0 ? hint : idx[0];
     var i = idx.indexOf(L.refLeader);
@@ -369,6 +373,30 @@
       }).join('') + '</tbody></table>' +
       '<p class="small muted">Partidas ranked online de ' + esc(R.SOURCE) + ', ' + fmtDate(R.DATE) + ' (' + R.LEADERS[i].games.toLocaleString('es-ES') + ' partidas de ' + esc(R.LEADERS[i].name) + '). Solo los 8 líderes más jugados. <a href="' + esc(R.URL) + '" target="_blank" rel="noopener">Ver fuente</a></p></div>';
     return h + turnRef(hint);
+  }
+  // Fichas detalladas (cardkaizoku) para los líderes que usa la tripulación
+  function detailRef() {
+    var R = window.LP_REFERENCE;
+    if (!R || !R.DETAIL) return '';
+    var used = {};
+    players().forEach(function (p) { if (p.leader_code && R.DETAIL[p.leader_code]) (used[p.leader_code] = used[p.leader_code] || []).push(p); });
+    var codes = Object.keys(used);
+    if (!codes.length) return '';
+    var mine = me() && me().leader_code;
+    codes.sort(function (a, b) { return (b === mine) - (a === mine); });
+    var lc = function (code) { var l = LEADERS.filter(function (x) { return x.code === code; })[0]; return l ? l.colors : []; };
+    function c(v, n, big) { var cls = v >= 55 ? 'good' : v <= 45 ? 'bad' : 'even'; return '<td class="' + cls + '"><b>' + v + '%</b><small>' + n.toLocaleString('es-ES') + '</small></td>'; }
+    return codes.map(function (code) {
+      var d = R.DETAIL[code];
+      var who = used[code].map(function (p) { return av(p) + ' ' + esc(p.name); }).join(' · ');
+      var fav = d.mu.filter(function (m) { return m[2] >= 55; }).length, unf = d.mu.filter(function (m) { return m[2] <= 45; }).length;
+      return '<div class="sec"><h2>' + dots(lc(code)) + ' ' + esc(d.name) + ' · ficha</h2></div><div class="card"><div class="who-row">' + who + '</div>' +
+        '<div class="stats three"><div class="stat"><b>' + d.first.toFixed(1) + '%</b><small>yendo 1.º</small></div><div class="stat"><b>' + d.second.toFixed(1) + '%</b><small>yendo 2.º</small></div><div class="stat"><b>' + d.games.toLocaleString('es-ES') + '</b><small>partidas</small></div></div>' +
+        '<p class="small center"><span class="tag good">Favorables ' + fav + '</span> <span class="tag even">Igualados ' + (d.mu.length - fav - unf) + '</span> <span class="tag bad">Desfavorables ' + unf + '</span></p>' +
+        '<table class="mu"><thead><tr><th>Rival</th><th>Total</th><th>1.º</th><th>2.º</th></tr></thead><tbody>' +
+        d.mu.map(function (m) { return '<tr><td>' + dots(lc(m[0])) + ' <b>' + esc(m[1]) + '</b><small>' + esc(m[0] || '—') + '</small></td>' + c(m[2], m[3]) + c(m[4], m[5]) + c(m[6], m[7]) + '</tr>'; }).join('') +
+        '</tbody></table><p class="small muted">% de victorias de ' + esc(d.name) + ' contra cada rival (debajo, nº de partidas). Verde ≥ 55 %, rojo ≤ 45 %. Datos de ' + esc(R.DETAIL_SOURCE) + ' del ' + fmtDate(d.date) + '. Con pocas partidas el % es orientativo.</p></div>';
+    }).join('');
   }
   // Ir 1.º / 2.º para todos los líderes con datos
   function turnRef(hint) {

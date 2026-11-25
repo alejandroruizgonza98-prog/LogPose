@@ -139,7 +139,7 @@ OP17-058|Kaido|p
 OP17-079|Monkey.D.Luffy|k
 OP17-099|Charlotte Linlin|y
 OP18-001|Karoo|rb
-OP18-021|Franky|
+OP18-021|Franky|gp
 OP18-022|Monkey.D.Luffy|g
 OP18-041|Ms. All Sunday|b
 OP18-060|Saint Gunko|pk

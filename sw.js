@@ -1,6 +1,6 @@
 /* Log Pose · service worker: la app abre sin conexión. Los datos van por Supabase y no se cachean aquí. */
-var CACHE = 'logpose-v7';
-var FILES = ['./', 'index.html', 'style.css?v=7', 'config.js?v=7', 'leaders.js?v=7', 'emblems.js?v=7', 'reference.js?v=7', 'app.js?v=7', 'icon.svg', 'manifest.webmanifest', 'fonts/rubik-dirt.woff2'];
+var CACHE = 'logpose-v8';
+var FILES = ['./', 'index.html', 'style.css?v=8', 'config.js?v=8', 'leaders.js?v=8', 'emblems.js?v=8', 'reference.js?v=8', 'app.js?v=8', 'icon.svg', 'manifest.webmanifest', 'fonts/rubik-dirt.woff2'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); }));

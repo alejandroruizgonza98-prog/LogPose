@@ -220,3 +220,8 @@ details summary { cursor: pointer; }
 .mu-best b { display: block; font-family: var(--head); font-weight: 400; font-size: 16px; color: var(--sea); }
 .mu-best small { font-size: 10px; color: var(--ink2); }
 #turnq { margin-bottom: 6px; }
+.mu td.good b { color: #1e7a45; } .mu td.bad b { color: var(--red); } .mu td.even b { color: var(--ink); }
+.mu td small { display: block; font-size: 10px; color: var(--ink2); }
+.tag.good { background: #1e7a45; } .tag.bad { background: var(--red); } .tag.even { background: #6b5a3c; }
+.who-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.who-row .av { width: 26px; height: 26px; font-size: 14px; box-shadow: none; }
