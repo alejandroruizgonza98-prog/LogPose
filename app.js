@@ -331,7 +331,7 @@
   function lkey(code, name) { return code || name || '?'; }
   function matchups() {
     var ms = scopeMatches();
-    var h = '<div class="sec"><h2>Emparejamientos</h2>' + scopeSwitch() + '</div>';
+    var h = detailRef() + '<div class="sec"><h2>Vuestras rondas</h2>' + scopeSwitch() + '</div>';
     if (!ms.length) { var pm = me(); return h + '<p class="muted center">Aún no hay rondas registradas. Abajo tienes los cruces globales; los vuestros aparecerán al registrar rondas (con líder rival y turno).</p>' + globalRef(pm ? pm.leader_code : ''); }
     var mine = {};
     ms.forEach(function (m) { var k = lkey(m.my_leader_code, m.my_leader_name); if (!mine[k]) mine[k] = { k: k, name: m.my_leader_name || 'Sin líder', code: m.my_leader_code, cols: m.my_colors, n: 0 }; mine[k].n++; });
@@ -355,7 +355,7 @@
   function globalRef(hint) {
     var R = window.LP_REFERENCE;
     if (!R || !R.LEADERS) return '';
-    return detailRef() + globalMatrix(hint);
+    return globalMatrix(hint);
   }
   function globalMatrix(hint) {
     var R = window.LP_REFERENCE;
